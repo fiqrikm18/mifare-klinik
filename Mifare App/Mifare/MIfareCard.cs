@@ -25,7 +25,7 @@ namespace MifareAppTest.Mifare
             var loadKeyCmd = new CommandApdu(IsoCase.Case3Short, SCardProtocol.Any)
             {
                 CLA = CLA,
-                Instruction = InstructionCode.ExternalAuthenticate
+                Instruction = InstructionCode.ExternalAuthenticate,
                 P1 = (byte)keyStructure,
                 P2 = keyNumber,
                 Data = key
