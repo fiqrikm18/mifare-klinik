@@ -1,4 +1,4 @@
-﻿namespace Mifare_App.Mifare
+﻿namespace MifareAppTest.Mifare
 {
     public enum KeyType
     {
