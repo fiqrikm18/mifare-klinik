@@ -27,7 +27,7 @@ namespace Mifare_App
         private byte BlocktglLahir = 25;
         private byte BlockjenisKelamin = 26;
 
-        private static MifareCard card;
+        private static MifareCard _card;
         private static IsoReader isoReader;
 
         public MainWindow()
@@ -57,7 +57,7 @@ namespace Mifare_App
                     mode: SCardShareMode.Shared,
                     protocol: SCardProtocol.Any,
                     releaseContextOnDispose: false);
-                    card = new MifareCard(isoReader);
+                    _card = new MifareCard(isoReader);
                 }
                 catch (Exception e)
                 {
@@ -68,11 +68,11 @@ namespace Mifare_App
 
         private static bool WriteBlock(byte msb, byte lsb, byte[] data)
         {
-            if (card.LoadKey(KeyStructure.VolatileMemory, 0x00, key))
+            if (_card.LoadKey(KeyStructure.VolatileMemory, 0x00, key))
             {
-                if (card.Authenticate(msb, lsb, KeyType.KeyA, 0x00))
+                if (_card.Authenticate(msb, lsb, KeyType.KeyA, 0x00))
                 {
-                    if (card.UpdateBinary(msb, lsb, data)) return true;
+                    if (_card.UpdateBinary(msb, lsb, data)) return true;
                     return false;
                 }
             }
@@ -83,9 +83,13 @@ namespace Mifare_App
         private static byte[] ReadBlock(byte msb, byte lsb)
         {
             var readBinary = new byte[] { };
-            if (card.Authenticate(msb, lsb, KeyType.KeyA, 0x00))
+
+            if (_card.LoadKey(KeyStructure.VolatileMemory, 0x00, key))
             {
-                readBinary = card.ReadBinary(msb, lsb, 16);
+                if (_card.Authenticate(msb, lsb, KeyType.KeyA, 0x00))
+                {
+                    readBinary = _card.ReadBinary(msb, lsb, 16);
+                }
             }
 
             return readBinary;
@@ -114,7 +118,7 @@ namespace Mifare_App
             int nBlock = 0;
             int count = 0;
 
-            for (i = blockFrom; i < blockTo; i++)
+            for (i = blockFrom; i <= blockTo; i++)
             {
                 if ((i + 1) % 4 == 0) continue;
                 nBlock++;
@@ -129,6 +133,38 @@ namespace Mifare_App
             }
 
             return dataOut;
+        }
+
+        public void ClearAllBLock()
+        {
+            var res = MessageBox.Show("Apakah anda yakin ingin menghapus data kartu? ", "Warning", MessageBoxButton.YesNo);
+
+            if (res == MessageBoxResult.Yes)
+            {
+                byte[] data = new byte[16];
+                if (_card.LoadKey(KeyStructure.VolatileMemory, 0x00, key))
+                {
+                    for (byte i = 1; i <= 63; i++)
+                    {
+                        if ((i + 1) % 4 == 0) continue;
+                        else
+                        {
+                            if (_card.Authenticate(Msb, i, KeyType.KeyA, 0x00))
+                            {
+                                Array.Clear(data, 0, 16);
+                                if (WriteBlock(Msb, i, data)) { }
+                                else
+                                {
+                                    MessageBox.Show("Data gagal dihapus");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("Data berhasil dihapus");
+                }
+            }
         }
 
         private bool NoReaderAvailable(ICollection<string> readerNames) => readerNames == null || readerNames.Count < 1;
@@ -235,22 +271,48 @@ namespace Mifare_App
                         //MessageBox.Show("Jenis kelaim gagal di tulis");
                     }
                 }
+
+                MessageBox.Show("Data pasien berhasil di tulis");
             }
         }
 
         private void BtnRead_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
+            string msg = "";
+            var rm = ReadBlock(Msb, BlocknoRekamMedis);
+            if(rm != null)
+                msg += "Nomor Rekam Medis: \n" + Util.ToASCII(rm, 0, 16, false);
 
-        private void BtnCheck_OnClick(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
+            var nId = ReadBlock(Msb, BlockidPasien);
+            if(rm!= null)
+                msg += "\n\nNomor ID Pasien: \n" + Util.ToASCII(nId, 0, 16, false);
+
+            var namaP = ReadBlockRange(Msb, BlocknamaFrom, BlocknamaTo);
+            if (namaP != null)
+                msg += "\n\nNama Pasien: \n" + Util.ToASCII(namaP, 0, 48, false);
+
+            var nTelp = ReadBlock(Msb, BlocknoTelp);
+            if (nTelp != null)
+                msg += "\n\nNomor Telepon Pasien: \n" + Util.ToASCII(nTelp, 0, 16, false);
+
+            var alamatP = ReadBlockRange(Msb, BlockalamatFrom, BlockalamatTo);
+            if (alamatP != null)
+                msg += "\n\nAlamat Pasien: \n" + Util.ToASCII(alamatP, 0, 64, false);
+
+            var tglHarie = ReadBlock(Msb, BlocktglLahir);
+            if (tglHarie != null)
+                msg += "\n\nTanggal Lahir: \n" + Util.ToASCII(tglHarie, 0, 16, false);
+
+            var jk = ReadBlock(Msb, BlockjenisKelamin);
+            if (jk != null)
+                msg += "\n\nJenis Kelamin: \n" + Util.ToASCII(jk, 0, 16, false);
+
+            MessageBox.Show(msg.ToString(), "Info Isi Kartu");
         }
 
         private void BtnErase_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            ClearAllBLock();
         }
-    }
-}
+    } //class
+} //namespace
