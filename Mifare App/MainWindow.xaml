@@ -72,6 +72,7 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Button x:Name="btnAdd" Click="BtnAdd_Onclick"  Content="Write"></Button>
                         <Button x:Name="btnRead" Click="BtnRead_OnClick" Content="Read"></Button>
+                        <Button x:Name="btnCheck" Click="BtnCheck_OnClick" Content="Check Card"></Button>
                         <Button x:Name="btnErase" Click="BtnErase_OnClick" Content="Erase Card"></Button>
                     </StackPanel>
                 </StackPanel>

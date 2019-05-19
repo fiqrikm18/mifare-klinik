@@ -314,5 +314,36 @@ namespace Mifare_App
         {
             ClearAllBLock();
         }
+
+        private void BtnCheck_OnClick(object sender, RoutedEventArgs e)
+        {
+            var rm = ReadBlock(Msb, BlocknoRekamMedis);
+            if (rm != null)
+                TxtNoRm.Text = Util.ToASCII(rm, 0, 16, false);
+
+            var nId = ReadBlock(Msb, BlockidPasien);
+            if (nId != null)
+                TxtNoIdentitas.Text = Util.ToASCII(nId, 0, 16, false);
+
+            var namaP = ReadBlockRange(Msb, BlocknamaFrom, BlocknamaTo);
+            if (namaP != null)
+                TxtNamaPasien.Text = Util.ToASCII(namaP, 0, 48, false);
+
+            var nTelp = ReadBlock(Msb, BlocknoTelp);
+            if (nTelp != null)
+                TxtNoTelp.Text = Util.ToASCII(nTelp, 0, 16, false);
+
+            var alamatP = ReadBlockRange(Msb, BlockalamatFrom, BlockalamatTo);
+            if (alamatP != null)
+                TextAlamat.Text = Util.ToASCII(alamatP, 0, 64, false);
+
+            var tglHarie = ReadBlock(Msb, BlocktglLahir);
+            if (tglHarie != null)
+                dtTanggalLahir.Text = Util.ToASCII(tglHarie, 0, 16, false);
+
+            var jk = ReadBlock(Msb, BlockjenisKelamin);
+            if (jk != null)
+                if (Util.ToASCII(jk, 0, 16, false) == "Pria") cbJenisKelamin.SelectedIndex = 0;
+        }
     } //class
 } //namespace
