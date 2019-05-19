@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mifare_App"
         mc:Ignorable="d"
-        Height="650" Width="800" WindowStartupLocation="CenterScreen">
+        Height="700" Width="800" WindowStartupLocation="CenterScreen">
     <Grid Style="{StaticResource OpenSans}" Margin="15">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0">
             <Label FontSize="16" FontWeight="Bold" Foreground="#555555">Daftar Pasien Baru</Label>
@@ -70,10 +70,10 @@
 
                 <StackPanel Grid.Column="0" Grid.Row="6">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Button x:Name="btnAdd" Content="Write"></Button>
-                        <Button x:Name="btnRead" Content="Read"></Button>
-                        <Button x:Name="btnCheck" Content="Check Card"></Button>
-                        <Button x:Name="btnErase" Content="Erase Card"></Button>
+                        <Button x:Name="btnAdd" Click="BtnAdd_Onclick"  Content="Write"></Button>
+                        <Button x:Name="btnRead" Click="BtnRead_OnClick" Content="Read"></Button>
+                        <Button x:Name="btnCheck" Click="BtnCheck_OnClick" Content="Check Card"></Button>
+                        <Button x:Name="btnErase" Click="BtnErase_OnClick" Content="Erase Card"></Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>

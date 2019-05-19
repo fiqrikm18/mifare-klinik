@@ -26,12 +26,38 @@ namespace MifareAppTest.Mifare
                 Data = key
             };
 
-            Debug.WriteLine($"LOAD KEY COMMAND: {BitConverter.ToString(loadKeyCmd.ToArray())}");
+            Debug.WriteLine($"Load Authentication Keys: {BitConverter.ToString(loadKeyCmd.ToArray())}");
             var response = m_isoReader.Transmit(loadKeyCmd);
             Debug.WriteLine($"SW1 SW2 = {response.SW1:X2} {response.SW2:X2}");
 
             return IsSuccess(response);
         }
+
+        //public bool Authenticate(byte msb, byte lsb, KeyType keyType, byte keyNumber)
+        //{
+        //    var authBlock = new GeneralAuthenticate
+        //    {
+        //        KeyNumber = keyNumber,
+        //        KeyType = keyType,
+        //        Lsb = lsb,
+        //        Msb = msb
+        //    };
+
+        //    var authCmd = new CommandApdu(IsoCase.Case3Short, SCardProtocol.Any)
+        //    {
+        //        CLA = Cla,
+        //        Instruction = InstructionCode.InternalAuthenticate,
+        //        P1 = 0x00,
+        //        P2 = 0x00,
+        //        Data = authBlock.ToArray()
+        //    };
+
+        //    Debug.WriteLine($"GENERAL AUTHENTICATE: {BitConverter.ToString(authCmd.ToArray())}");
+        //    var response = m_isoReader.Transmit(authCmd);
+        //    Debug.WriteLine($"SW1 SW2 = {response.SW1:X2} {response.SW2:X2}");
+
+        //    return IsSuccess(response);
+        //}
 
         public bool Authenticate(byte msb, byte lsb, KeyType keyType, byte keyNumber)
         {
@@ -43,7 +69,7 @@ namespace MifareAppTest.Mifare
                 Msb = msb
             };
 
-            var authCmd = new CommandApdu(IsoCase.Case3Short, SCardProtocol.Any)
+            var authKeyCmd = new CommandApdu(IsoCase.Case3Short, SCardProtocol.Any)
             {
                 CLA = Cla,
                 Instruction = InstructionCode.InternalAuthenticate,
@@ -52,11 +78,11 @@ namespace MifareAppTest.Mifare
                 Data = authBlock.ToArray()
             };
 
-            Debug.WriteLine($"GENERAL AUTHENTICATE: {BitConverter.ToString(authCmd.ToArray())}");
-            var response = m_isoReader.Transmit(authCmd);
-            Debug.WriteLine($"SW1 SW2 = {response.SW1:X2} {response.SW2:X2}");
+            Debug.WriteLine($"General Authenticate: {BitConverter.ToString(authKeyCmd.ToArray())}");
+            var respon = m_isoReader.Transmit(authKeyCmd);
+            Debug.WriteLine($"SW1 SW2 = {respon.SW1:X2} {respon.SW1:X2}");
 
-            return IsSuccess(response);
+            return IsSuccess(respon);
         }
 
         public byte[] ReadBinary(byte msb, byte lsb, int size)
@@ -83,6 +109,7 @@ namespace MifareAppTest.Mifare
             var updateBinaryCmd = new CommandApdu(IsoCase.Case3Short, SCardProtocol.Any)
             {
                 CLA = Cla,
+                Instruction = InstructionCode.UpdateBinary,
                 P1 = msb,
                 P2 = lsb,
                 Data = data
@@ -95,6 +122,6 @@ namespace MifareAppTest.Mifare
             return IsSuccess(response);
         }
 
-        private bool IsSuccess(Response response) => (response.SW1 == (byte) SW1Code.Normal) && (response.SW1 == 0x00);
+        private bool IsSuccess(Response response) => (response.SW1 == (byte) SW1Code.Normal) && (response.SW2 == 0x00);
     }
 }

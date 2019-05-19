@@ -78,6 +78,7 @@
     <Compile Include="Mifare\KeyStructure.cs" />
     <Compile Include="Mifare\KeyType.cs" />
     <Compile Include="Mifare\MifareCard.cs" />
+    <Compile Include="Mifare\Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
